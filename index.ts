@@ -138,14 +138,46 @@ export const PLATFORMS: {
     },
   },
 }
+export const toProfileIdBuf = function (
+  platform: ScriptChunkPlatformUTF8,
+  profileId: string,
+): Buffer {
+  const platformSpec = PLATFORMS[platform]
+  const profileBuf = Buffer.alloc(platformSpec.profileId.len)
+  profileBuf.write(profileId, platformSpec.profileId.len - profileId.length, 'utf8')
+
+  return profileBuf
+}
 /**
  * Convert the `OP_RETURN` profile name back to UTF-8 with null bytes removed
  * @param profileIdBuf
  */
-export const toProfileUTF8 = function (profileIdBuf: Buffer) {
-  return new TextDecoder('utf-8').decode(
-    profileIdBuf.filter(byte => byte != 0x00),
+export const toProfileIdUTF8 = function (profileIdBuf: Buffer) {
+  return new TextDecoder('utf-8').decode(profileIdBuf.filter(byte => byte != 0x00))
+}
+export const toPostIdBuf = function (
+  platform: ScriptChunkPlatformUTF8,
+  postId: string,
+): Buffer {
+  return Buffer.from(
+    PLATFORMS[platform].postId.type == 'String'
+      ? Buffer.from(postId).toString('hex')
+      : new Function(PLATFORMS[platform].postId.type)(postId),
   )
+}
+/**
+ * Convert the UTF-8 platform name to the defined 1-byte platform hex code
+ * @param platform
+ * @returns
+ */
+export const toPlatformBuf = function (
+  platform: ScriptChunkPlatformUTF8,
+): Buffer | undefined {
+  for (const [byte, platformName] of SCRIPT_CHUNK_PLATFORM) {
+    if (platformName == platform) {
+      return Buffer.from([byte])
+    }
+  }
 }
 /**
  * Convert the defined 1-byte platform hex code to the UTF-8 platform name
@@ -157,7 +189,20 @@ export const toPlatformUTF8 = function (
   return SCRIPT_CHUNK_PLATFORM.get(platformBuf.readUint8())
 }
 /**
- * Convert the defined 1-byte sentiment hex code to the UTF-8 sentiment name
+ * Convert the UTF-8 sentiment name to the defined 1-byte OP code
+ * @param sentiment
+ * @returns
+ */
+export const toSentimentOpCode = function (sentiment: ScriptChunkSentimentUTF8) {
+  switch (sentiment) {
+    case 'positive':
+      return 'OP_1'
+    case 'negative':
+      return 'OP_0'
+  }
+}
+/**
+ * Convert the defined 1-byte sentiment OP code to the UTF-8 sentiment name
  * @param sentimentBuf
  */
 export const toSentimentUTF8 = function (
