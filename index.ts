@@ -159,11 +159,16 @@ export const toPostIdBuf = function (
   platform: ScriptChunkPlatformUTF8,
   postId: string,
 ): Buffer {
-  return Buffer.from(
-    PLATFORMS[platform].postId.type == 'String'
-      ? Buffer.from(postId).toString('hex')
-      : new Function(PLATFORMS[platform].postId.type)(postId),
-  )
+  let postIdHex: string
+  switch (PLATFORMS[platform].postId.type) {
+    case 'BigInt':
+      postIdHex = BigInt(postId).toString(16)
+    case 'Number':
+      postIdHex = Number(postId).toString(16)
+    case 'String':
+      postIdHex = Buffer.from(postId).toString('hex')
+  }
+  return Buffer.from(postIdHex, 'hex')
 }
 /**
  * Convert the UTF-8 platform name to the defined 1-byte platform hex code
