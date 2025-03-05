@@ -35,7 +35,6 @@ export type RankOutput = {
   profileId: string // who the ranking is for
   postId?: string // optional post ID if ranking specific content
   sentiment: string // positive or negative sentiment (can support more)
-  comment?: string // optional comment
 }
 /**  */
 export type RankTransaction = RankOutput & {
