@@ -39,6 +39,7 @@ export type RankOutput = {
 /**  */
 export type RankTransaction = RankOutput & {
   txid: string
+  scriptPayload: string
   height?: number // undefined if mempool
   sats: bigint
   timestamp: bigint // unix timestamp
