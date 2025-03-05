@@ -82,8 +82,8 @@ export type PostMap = Map<string, Post>
 export const RANK_OUTPUT_MIN_VALID_SATS = 1_000_000 // minimum RANK burn value in sats
 /** First block with a RANK transaction */
 export const RANK_BLOCK_GENESIS_V1: Partial<Block> = {
-  hash: '00000000019cc1ddc04bc541f531f1424d04d0c37443867f1f6137cc7f7d09e5',
-  height: 811624,
+  hash: '0000000000c974cb635064bec0db8cc64a75526871f581ea5dbeca7a98551546',
+  height: 952169,
 }
 /**
  * RANK script types and constants
