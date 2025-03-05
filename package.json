@@ -2,8 +2,8 @@
   "name": "rank-lib",
   "version": "0.1.0",
   "description": "Library containing necessary definitions and functions for crafting RANK transactions",
-  "main": "index.cjs",
-  "type": "module",
+  "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

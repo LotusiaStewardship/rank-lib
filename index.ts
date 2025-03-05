@@ -31,15 +31,16 @@ export type ScriptChunk = {
 }
 /** OP_RETURN \<RANK\> \<sentiment\> \<profileId\> [\<postId\> \<comment\>] */
 export type RankOutput = {
+  sentiment: string // positive or negative sentiment (can support more)
   platform: string // e.g. Twitter/X.com, etc.
   profileId: string // who the ranking is for
   postId?: string // optional post ID if ranking specific content
-  sentiment: string // positive or negative sentiment (can support more)
-  comment?: string // optional comment
+  instanceId?: string // ID of the registered extension instance
 }
 /**  */
 export type RankTransaction = RankOutput & {
   txid: string
+  scriptPayload: string
   height?: number // undefined if mempool
   sats: bigint
   timestamp: bigint // unix timestamp
@@ -81,8 +82,8 @@ export type PostMap = Map<string, Post>
 export const RANK_OUTPUT_MIN_VALID_SATS = 1_000_000 // minimum RANK burn value in sats
 /** First block with a RANK transaction */
 export const RANK_BLOCK_GENESIS_V1: Partial<Block> = {
-  hash: '00000000019cc1ddc04bc541f531f1424d04d0c37443867f1f6137cc7f7d09e5',
-  height: 811624,
+  hash: '0000000000c974cb635064bec0db8cc64a75526871f581ea5dbeca7a98551546',
+  height: 952169,
 }
 /**
  * RANK script types and constants
