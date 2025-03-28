@@ -29,6 +29,30 @@ export type ScriptChunk = {
   len: number | null
   map?: ScriptChunkLokadMap | ScriptChunkPlatformMap | ScriptChunkSentimentMap
 }
+/** */
+export type PostMeta = {
+  hasWalletUpvoted: boolean
+  hasWalletDownvoted: boolean
+  txidsUpvoted: string[]
+  txidsDownvoted: string[]
+}
+/** */
+export type RankAPIParams = {
+  platform: string
+  profileId: string
+}
+/** Profile ranking returned from RANK backend API */
+export type IndexedRanking = RankAPIParams & {
+  ranking: string
+  votesPositive: number
+  votesNegative: number
+}
+/** Post ranking returned from RANK backend API */
+export type IndexedPostRanking = IndexedRanking & {
+  profile: IndexedRanking
+  postId: string
+  postMeta?: PostMeta
+}
 /** OP_RETURN \<RANK\> \<sentiment\> \<profileId\> [\<postId\> \<comment\>] */
 export type RankOutput = {
   sentiment: string // positive or negative sentiment (can support more)
