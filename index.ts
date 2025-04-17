@@ -157,7 +157,7 @@ export const PLATFORMS: {
     },
     postId: {
       chunkLength: 8, // 64-bit uint: https://developer.x.com/en/docs/x-ids
-      regex: /[0-9]+/,
+      regex: /^[0-9]+$/,
       reader: 'readBigUInt64BE',
       type: 'BigInt',
     },
