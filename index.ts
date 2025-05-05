@@ -5,7 +5,7 @@ export type PlatformParameters = {
     len: number
   }
   postId: {
-    chunkLength: number
+    len: number
     regex: RegExp
     reader: 'readBigUInt64BE' // additional Buffer reader methods if needed
     type: 'BigInt' | 'Number' | 'String'
@@ -22,11 +22,15 @@ export type ScriptChunkField =
   | 'lokad'
   | 'sentiment'
   | 'platform'
-  | 'profile'
-  | 'post'
+  | 'profileId'
+  | 'postId'
   | 'comment'
 export type ScriptChunk = {
+  /** Byte offset of the chunk in the output script */
+  offset?: number
+  /** Byte length of the chunk in the output script */
   len: number | null
+  /** Map of supported RANK script chunks */
   map?: ScriptChunkLokadMap | ScriptChunkPlatformMap | ScriptChunkSentimentMap
 }
 /** */
@@ -109,36 +113,48 @@ export const RANK_BLOCK_GENESIS_V1: Partial<Block> = {
   hash: '0000000000c974cb635064bec0db8cc64a75526871f581ea5dbeca7a98551546',
   height: 952169,
 }
-/**
- * RANK script types and constants
- */
+/** LOKAD chunk map */
 export const SCRIPT_CHUNK_LOKAD: ScriptChunkLokadMap = new Map()
 SCRIPT_CHUNK_LOKAD.set(0x52414e4b, 'RANK')
-export const SCRIPT_CHUNK_PLATFORM: ScriptChunkPlatformMap = new Map()
-//SCRIPT_CHUNK_PLATFORM.set(0x00, 'web_url') // any URL; the PROFILE script chunk is not necessary
-SCRIPT_CHUNK_PLATFORM.set(0x01, 'twitter') // twitter.com/x.com
+/** Sentiment chunk map */
 export const SCRIPT_CHUNK_SENTIMENT: ScriptChunkSentimentMap = new Map()
 SCRIPT_CHUNK_SENTIMENT.set(0x51, 'positive') // OP_1 | OP_TRUE
 SCRIPT_CHUNK_SENTIMENT.set(0x00, 'negative') // OP_0 | OP_FALSE
-export const RANK_SCRIPT_CHUNKS: {
-  [name in ScriptChunkField]: ScriptChunk
+/** Platform chunk map */
+export const SCRIPT_CHUNK_PLATFORM: ScriptChunkPlatformMap = new Map()
+//SCRIPT_CHUNK_PLATFORM.set(0x00, 'web_url') // any URL; the PROFILE script chunk is not necessary
+SCRIPT_CHUNK_PLATFORM.set(0x01, 'twitter') // twitter.com/x.com
+/** Length of the required RANK script chunks in bytes */
+export const RANK_SCRIPT_REQUIRED_LENGTH = 10
+/** Required RANK script chunks */
+export const RANK_SCRIPT_CHUNKS_REQUIRED: {
+  [name in Exclude<ScriptChunkField, 'postId' | 'comment'>]: ScriptChunk
 } = {
   lokad: {
+    offset: 2,
     len: 4,
     map: SCRIPT_CHUNK_LOKAD,
   },
   sentiment: {
+    offset: 6, // 0x51 | 0x00 (OP_TRUE | OP_FALSE)
     len: 1,
     map: SCRIPT_CHUNK_SENTIMENT,
   },
   platform: {
+    offset: 8, // 0x01 push op at offset 7, then 1-byte platform begins at offset 8
     len: 1,
     map: SCRIPT_CHUNK_PLATFORM,
   },
-  profile: {
-    len: null,
+  profileId: {
+    offset: 10, // variable-length push op, then profileId begins at offset 10
+    len: null, // specified in PlatformParameters
   },
-  post: {
+}
+/** Optional RANK script chunks */
+export const RANK_SCRIPT_CHUNKS_OPTIONAL: {
+  [name in Extract<ScriptChunkField, 'postId' | 'comment'>]: ScriptChunk
+} = {
+  postId: {
     len: null,
   },
   comment: {
@@ -156,7 +172,7 @@ export const PLATFORMS: {
       len: 16,
     },
     postId: {
-      chunkLength: 8, // 64-bit uint: https://developer.x.com/en/docs/x-ids
+      len: 8, // 64-bit uint: https://developer.x.com/en/docs/x-ids
       regex: /^[0-9]+$/,
       reader: 'readBigUInt64BE',
       type: 'BigInt',
