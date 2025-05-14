@@ -1,5 +1,17 @@
 // General types
 export type LogEntry = [string, string]
+export type InstanceData = {
+  instanceId: string
+  runtimeId: string
+  startTime: string
+  nonce: number
+}
+export type AuthorizationData = {
+  instanceId: string
+  scriptPayload: string
+  blockhash: string
+  blockheight: string
+}
 export type PlatformParameters = {
   profileId: {
     len: number
@@ -265,4 +277,47 @@ export const log = function (entries: LogEntry[]) {
   console.log(
     `${new Date().toISOString()} ${entries.map(entry => entry.join('=')).join(' ')}`,
   )
+}
+/**
+ * Utility functions
+ */
+export const Util = {
+  /** Base64 operations */
+  base64: {
+    /**
+     * Encodes a string to a base64 encoded string
+     * @param str The string to encode
+     * @returns The base64 encoded string
+     */
+    encode(str: string) {
+      return Buffer.from(str).toString('base64')
+    },
+    /**
+     * Decodes a base64 encoded string
+     * @param str The base64 encoded string to decode
+     * @returns The decoded string
+     */
+    decode(str: string) {
+      return Buffer.from(str, 'base64').toString('utf8')
+    },
+  },
+  /** Crypto operations */
+  crypto: {
+    /**
+     * Generates a random UUID
+     * @returns The random UUID
+     */
+    randomUUID(): string {
+      return crypto.randomUUID()
+    },
+  },
+}
+/**
+ * API operations
+ */
+export const API = {
+  auth: {
+    scheme: 'BlockDataSig',
+    param: ['blockhash', 'blockheight'],
+  },
 }
