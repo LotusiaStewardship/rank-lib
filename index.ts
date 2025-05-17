@@ -71,8 +71,8 @@ export type IndexedPostRanking = IndexedRanking & {
 }
 /** OP_RETURN \<RANK\> \<sentiment\> \<profileId\> [\<postId\> \<comment\>] */
 export type RankOutput = {
-  sentiment: string // positive or negative sentiment (can support more)
-  platform: string // e.g. Twitter/X.com, etc.
+  sentiment: ScriptChunkSentimentUTF8 // positive or negative sentiment (can support more)
+  platform: ScriptChunkPlatformUTF8 // e.g. Twitter/X.com, etc.
   profileId: string // who the ranking is for
   postId?: string // optional post ID if ranking specific content
   instanceId?: string // ID of the registered extension instance
